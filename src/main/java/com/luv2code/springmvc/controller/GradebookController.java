@@ -14,46 +14,43 @@ import java.util.List;
 @RestController
 public class GradebookController {
 
+    private static final String STUDENT_OR_GRADE_WAS_NOT_FOUND = "Student or Grade was not found";
+
     @Autowired
     private StudentAndGradeService studentService;
 
     @Autowired
     private Gradebook gradebook;
 
-
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public List<GradebookCollegeStudent> getStudents() {
         gradebook = studentService.getGradebook();
         return gradebook.getStudents();
     }
 
-
     @GetMapping("/studentInformation/{id}")
     public GradebookCollegeStudent studentInformation(@PathVariable int id) {
 
         if (!studentService.checkIfStudentIsNull(id)) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
-        GradebookCollegeStudent studentEntity = studentService.studentInformation(id);
 
-        return studentEntity;
+        return studentService.studentInformation(id);
     }
 
-
     @PostMapping(value = "/")
-    public List<GradebookCollegeStudent> createStudent(@RequestBody CollegeStudent student) {
+    public List<GradebookCollegeStudent> createStudent(@RequestBody CollegueStudentDto student) {
 
         studentService.createStudent(student.getFirstname(), student.getLastname(), student.getEmailAddress());
         gradebook = studentService.getGradebook();
         return gradebook.getStudents();
     }
 
-
     @DeleteMapping("/student/{id}")
     public List<GradebookCollegeStudent> deleteStudent(@PathVariable int id) {
 
         if (!studentService.checkIfStudentIsNull(id)) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
 
         studentService.deleteStudent(id);
@@ -61,26 +58,25 @@ public class GradebookController {
         return gradebook.getStudents();
     }
 
-
     @PostMapping(value = "/grades")
     public GradebookCollegeStudent createGrade(@RequestParam("grade") double grade,
-                                               @RequestParam("gradeType") String gradeType,
-                                               @RequestParam("studentId") int studentId) {
+            @RequestParam("gradeType") String gradeType,
+            @RequestParam("studentId") int studentId) {
 
         if (!studentService.checkIfStudentIsNull(studentId)) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
 
         boolean success = studentService.createGrade(grade, studentId, gradeType);
 
         if (!success) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
 
         GradebookCollegeStudent studentEntity = studentService.studentInformation(studentId);
 
         if (studentEntity == null) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
 
         return studentEntity;
@@ -92,12 +88,10 @@ public class GradebookController {
         int studentId = studentService.deleteGrade(id, gradeType);
 
         if (studentId == 0) {
-            throw new StudentOrGradeNotFoundException("Student or Grade was not found");
+            throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
 
-        GradebookCollegeStudent studentEntity = studentService.studentInformation(studentId);
-
-        return studentEntity;
+        return studentService.studentInformation(studentId);
     }
 
     @ExceptionHandler
