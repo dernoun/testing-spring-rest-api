@@ -22,7 +22,7 @@ public class GradebookController {
     @Autowired
     private Gradebook gradebook;
 
-    @GetMapping(value = "/")
+    @GetMapping("/")
     public List<GradebookCollegeStudent> getStudents() {
         gradebook = studentService.getGradebook();
         return gradebook.getStudents();

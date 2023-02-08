@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-public class StudentAndGradeServiceTest {
+class StudentAndGradeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbc;
