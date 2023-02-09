@@ -1,5 +1,10 @@
 package com.luv2code.springmvc;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -12,10 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +51,8 @@ class GradbookControllerTest {
     @Autowired
     private JdbcTemplate jdbc;
 
+    private static final  MediaType APPLICATION_JSON_UTF8 = MediaType.APPLICATION_JSON;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,7 +60,7 @@ class GradbookControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CollegeStudent collegeStudent;
+    private CollegeStudent student;
 
     @Autowired
     private StudentDao studentDao;
@@ -108,8 +118,19 @@ class GradbookControllerTest {
     }
 
     @Test
-    void placeHolder(){
+    void getStudentHttpRequest() throws Exception{
+        
+        student.setFirstname("Mouloud");
+        student.setLastname("Dernoun");
+        student.setFirstname("mouloud.dernoun@gmail.com");
+        entityManager.persist(student);
+        entityManager.flush();
 
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andReturn();
     }
 
     @AfterEach
