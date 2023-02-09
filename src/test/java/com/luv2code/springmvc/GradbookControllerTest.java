@@ -1,6 +1,8 @@
 package com.luv2code.springmvc;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -131,6 +133,23 @@ class GradbookControllerTest {
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(2)))
             .andReturn();
+    }
+
+    @Test
+    void createStudentHttpRequest() throws Exception{
+        student.setFirstname("Oumnia");
+        student.setLastname("tafer");
+        student.setEmailAddress("taferoumnia@gmail.com");
+
+        mockMvc.perform(post("/")
+            .contentType(APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(student)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andReturn();
+
+        CollegeStudent verifyStudent = studentDao.findByEmailAddress("taferoumnia@gmail.com");
+        assertNotNull(verifyStudent);
     }
 
     @AfterEach
