@@ -2,6 +2,8 @@ package com.luv2code.springmvc;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -150,6 +152,17 @@ class GradbookControllerTest {
 
         CollegeStudent verifyStudent = studentDao.findByEmailAddress("taferoumnia@gmail.com");
         assertNotNull(verifyStudent);
+    }
+
+    @Test
+    void deleteStudentHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent(), "Check first if the student exists");
+
+        MvcResult mvcResult = mockMvc.perform(delete("/student/{id}", 1)
+                                        .contentType(APPLICATION_JSON_UTF8))
+                                        .andExpect(status().isOk())
+                                        .andExpect(jsonPath("$", hasSize(0)))
+                                        .andReturn();
     }
 
     @AfterEach
