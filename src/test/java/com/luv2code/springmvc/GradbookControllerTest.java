@@ -1,6 +1,8 @@
 package com.luv2code.springmvc;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -158,10 +160,22 @@ class GradbookControllerTest {
     void deleteStudentHttpRequest() throws Exception {
         assertTrue(studentDao.findById(1).isPresent(), "Check first if the student exists");
 
-        MvcResult mvcResult = mockMvc.perform(delete("/student/{id}", 1)
+        mockMvc.perform(delete("/student/{id}", 1)
                                         .contentType(APPLICATION_JSON_UTF8))
                                         .andExpect(status().isOk())
                                         .andExpect(jsonPath("$", hasSize(0)))
+                                        .andReturn();
+        assertFalse(studentDao.findById(1).isPresent(), "Check first if the student exists");
+    }
+
+    @Test
+    void deleteStudenDoesNotExiststHttpRequest() throws Exception {
+        assertFalse(studentDao.findById(0).isPresent(), "Check first if the student exists");
+
+        mockMvc.perform(delete("/student/{id}", 0)
+                                        .contentType(APPLICATION_JSON_UTF8))
+                                        .andExpect(status().isNotFound())
+                                        .andExpect(jsonPath("$.status", is(404)))
                                         .andReturn();
     }
 
