@@ -124,7 +124,7 @@ class StudentAndGradeServiceTest {
 
 
     @Test
-    public void studentInformationService() {
+    void studentInformationService() {
         GradebookCollegeStudent gradebookCollegeStudentTest = studentService.studentInformation(1);
 
         assertNotNull(gradebookCollegeStudentTest);
@@ -136,14 +136,14 @@ class StudentAndGradeServiceTest {
         assertNotNull(gradebookCollegeStudentTest.getStudentGrades().getScienceGradeResults());
         assertNotNull(gradebookCollegeStudentTest.getStudentGrades().getHistoryGradeResults());
 
-        assertEquals("Eric", gradebookCollegeStudentTest.getFirstname());
-        assertEquals("Roby", gradebookCollegeStudentTest.getLastname());
-        assertEquals("eric.roby@luv2code_school.com", gradebookCollegeStudentTest.getEmailAddress());
+        assertEquals("Mouloud", gradebookCollegeStudentTest.getFirstname());
+        assertEquals("Dernoun", gradebookCollegeStudentTest.getLastname());
+        assertEquals("mouloud.dernoun@gmail.com", gradebookCollegeStudentTest.getEmailAddress());
 
     }
 
     @Test
-    public void isGradeNullCheck() {
+    void isGradeNullCheck() {
 
         assertTrue(studentService.checkIfGradeIsNull(1, "math"),
                 "@BeforeTransaction creates student : return true");
@@ -162,7 +162,7 @@ class StudentAndGradeServiceTest {
     }
 
     @Test
-    public void deleteGradeService() {
+    void deleteGradeService() {
 
         assertEquals(1, studentService.deleteGrade(1, "math"),
                 "@BeforeTransaction creates student : return true");
@@ -181,7 +181,7 @@ class StudentAndGradeServiceTest {
     }
 
     @Test
-    public void createGradeService() {
+    void createGradeService() {
 
         studentService.createGrade(80.50, 2, "math");
         studentService.createGrade(80.50, 2, "science");
@@ -207,7 +207,7 @@ class StudentAndGradeServiceTest {
             @Sql("/overrideData.sql"),
             @Sql("/insertGrade.sql")})
     @Test
-    public void getGradebookService() {
+    void getGradebookService() {
 
         Gradebook gradebook = studentService.getGradebook();
 
@@ -220,9 +220,9 @@ class StudentAndGradeServiceTest {
         }
 
         assertEquals(4, gradebookTest.getStudents().size());
-        assertTrue(gradebookTest.getStudents().get(0).getStudentGrades().getHistoryGradeResults() != null);
-        assertTrue(gradebookTest.getStudents().get(0).getStudentGrades().getScienceGradeResults() != null);
-        assertTrue(gradebookTest.getStudents().get(0).getStudentGrades().getMathGradeResults() != null);
+        assertNotNull(gradebookTest.getStudents().get(0).getStudentGrades().getHistoryGradeResults());
+        assertNotNull(gradebookTest.getStudents().get(0).getStudentGrades().getScienceGradeResults());
+        assertNotNull(gradebookTest.getStudents().get(0).getStudentGrades().getMathGradeResults());
     }
 
 

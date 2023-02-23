@@ -6,10 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,7 +31,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,7 +134,7 @@ class GradbookControllerTest {
         entityManager.persist(student);
         entityManager.flush();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(2)))
@@ -174,13 +176,38 @@ class GradbookControllerTest {
 
         mockMvc.perform(delete("/student/{id}", 0)
                                         .contentType(APPLICATION_JSON_UTF8))
-                                        .andExpect(status().isNotFound())
+                                        .andExpect(status().is4xxClientError())
                                         .andExpect(jsonPath("$.status", is(404)))
                                         .andReturn();
     }
 
+    @Test
+    void studentInformationtHttpRequest() throws Exception{
+        Optional<CollegeStudent> student = studentDao.findById(1);
+        assertTrue(student.isPresent());
+
+        mockMvc.perform(get("/studentInformation/{id}", 1))
+                            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                            .andExpect(jsonPath("$.id", is(1)))
+                            .andExpect(jsonPath("$.firstname", is("Mouloud")))
+                            .andExpect(status().isOk())
+                            .andReturn();
+    }
+
+    @Test
+    void studentInformationtDoesNotHttpRequest() throws Exception{
+        Optional<CollegeStudent> student = studentDao.findById(0);
+        assertFalse(student.isPresent());
+
+        mockMvc.perform(get("/studentInformation/{id}", 0))
+                            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                            .andExpect(jsonPath("$.status", is(404)))
+                            .andExpect(status().is4xxClientError())
+                            .andReturn();
+    }
+
     @AfterEach
-    public void setupAfterTransaction() {
+    void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
         jdbc.execute(sqlDeleteMathGrade);
         jdbc.execute(sqlDeleteScienceGrade);
