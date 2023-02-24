@@ -78,7 +78,7 @@ public class GradebookController {
         if (studentEntity == null) {
             throw new StudentOrGradeNotFoundException(STUDENT_OR_GRADE_WAS_NOT_FOUND);
         }
-
+        System.out.println(studentEntity);
         return studentEntity;
     }
 

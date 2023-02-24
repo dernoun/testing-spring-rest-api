@@ -205,6 +205,22 @@ class GradbookControllerTest {
                             .andExpect(status().is4xxClientError())
                             .andReturn();
     }
+    
+    @Test
+    void createGradeHttpRequest() throws Exception{
+        mockMvc.perform(post("/grades")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .param("grade", "90.50")
+                        .param("gradeType", "math")
+                        .param("studentId", "1"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                        .andExpect(jsonPath("$.firstname", is("Mouloud")))
+                        .andExpect(jsonPath("$.lastname", is("Dernoun")))
+                        .andExpect(jsonPath("$.emailAddress", is("mouloud.dernoun@gmail.com")))
+                        .andExpect(jsonPath("$.studentGrades.mathGradeResults", hasSize(2)))
+                        .andReturn();
+    }
 
     @AfterEach
     void setupAfterTransaction() {
